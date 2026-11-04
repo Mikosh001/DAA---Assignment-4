@@ -196,6 +196,7 @@ public final class AlgorithmTests {
         check(kmp.preprocessingComparisons() <= 2L * pattern.length(), "LPS must be linear");
         check(kmp.searchComparisons() <= 2L * text.length(), "KMP search must be linear");
         check(rabinKarp.hashUpdates() == (long) text.length() + pattern.length(), "Rolling hash updates");
+        matches("abababab", "abab", List.of(0, 2, 4));
         MatchingResult overlapping = KmpMatcher.findAll("abababab", "abab");
         check(overlapping.indices().equals(List.of(0, 2, 4)), "LPS preserves overlaps");
         check(overlapping.preprocessingComparisons() == 3, "Exact LPS comparison count");
