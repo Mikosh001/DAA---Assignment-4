@@ -19,18 +19,20 @@ Kasai requires a valid sorted suffix-array permutation. `LCP[0]=0`; `LCP[i]` com
 
 ## 3. Complexity Analysis
 
-DP lengths: m,n; matching: text n, pattern m, `w=n-m+1`; Kasai: s. Assume nonempty DP inputs and `1<=m<=n`. Space excludes inputs and O(z) returned match indices.
+DP lengths: m,n; matching: text n, pattern m, `w=n-m+1`, z matches; Kasai: s. Assume nonempty DP inputs and `1<=m<=n`. Auxiliary space excludes inputs and the returned result but includes temporary storage used to build it.
 
 |Algorithm|Main work / justification|Preprocessing|Best / worst core time|Auxiliary space|
 |---|---|---|---|---|
 |LCS|L recurrence, every cell once|Included|Both Theta(mn)|O(mn)|
 |Edit Distance|D recurrence, every cell once|Included|Both Theta(mn)|O(mn)|
-|Naive|Compare each alignment; early mismatch or m comparisons|O(1)|Theta(w) / O(wm)|O(1)|
-|KMP|LPS fallbacks; text position never decreases|Theta(m)|Both Theta(n)|O(m)|
-|Rabin-Karp|Constant-time rolling updates; verify hash hits|Theta(m)|Theta(w) / O(wm)|O(1)|
+|Naive|Compare each alignment; early mismatch or m comparisons|O(1)|Theta(w) / O(wm)|O(1+z)|
+|KMP|LPS fallbacks; text position never decreases|Theta(m)|Both Theta(n)|O(m+z)|
+|Rabin-Karp|Constant-time rolling updates; verify hash hits|Theta(m)|Theta(w) / O(wm)|O(1+z)|
 |Kasai|Rank array and amortized prefix reuse|Included|Both Theta(s)|O(s)|
 
-RK search: `O(w+(z+c)m)` for z matches and c collisions; expected `O(w+zm)` with few collisions, not a worst-case guarantee. Add preprocessing to matching totals. Empty-pattern output takes O(n); longer patterns and empty DP base cases take O(1).
+The matchers collect indices in an `ArrayList` and copy it into an immutable result. The temporary list uses O(z) space. Excluding all occurrence-list storage, Naive and RK use O(1) working space and KMP uses O(m) for LPS.
+
+RK search: `O(w+(z+c)m)` for c false hash hits. If expected collision verification takes O(w), expected search time is `O(w+zm)`. Add preprocessing to matching totals. Returning n+1 empty-pattern matches takes Theta(n+1) time and space. Longer patterns and empty DP base cases take O(1) time and space.
 
 ## 4. Testing
 
